@@ -1,0 +1,26 @@
+/* Change list view header background color */
+.fc-list-day {
+    background-color: #1976d2 !important; /* Change this to your preferred color */
+    color: white !important; /* Change text color */
+  }
+/* Change list event hover color */
+.fc-list-event:hover {
+    background-color: #6e5b55 !important; /* Change hover background */
+    color: rgb(15, 14, 14) !important; /* Change text color */
+  }
+  .fc-list-table .fc-list-day-cushion {
+    background-color: #252524 !important; /* Background color for selected date */
+    color: rgb(240, 236, 236) !important; /* Text color */
+  }
+
+  
+  /* Event items in list view */
+  .fc-list-event {
+    border-left: 5px solid #393f45; /* Left border */
+  }
+  
+  /* Event time text */
+  .fc-list-event-time {
+    font-weight: bold;
+  }
+  
