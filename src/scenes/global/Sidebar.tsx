@@ -16,6 +16,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import React from "react";
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
@@ -118,17 +119,32 @@ const Sidebar: React.FC = () => {
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  style={{ cursor: "pointer", borderRadius: "50%" }}
                 >
                   {user?.signInDetails?.loginId}
                 </Typography>
-                <Typography variant="h6" color={colors.greenAccent[500]}>
-                  startup founder
-                </Typography>
+                <Box paddingLeft={isCollapsed ? undefined : "10%"} mr={5}>
+                <Item
+                  title="Edit Profile"
+                  to="/userProfile"
+                  icon={<AddAPhotoOutlinedIcon />}
+                  selected={selected}
+                  setSelected={setSelected}
+                  />
+                  </Box>
               </Box>
             </Box>
           )}
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+          <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Home
+            </Typography>
             <Item
               title="Dashboard"
               to="/"

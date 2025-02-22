@@ -39,7 +39,7 @@ const checkoutSchema = yup.object().shape({
     .matches(phoneRegExp, "Phone number is not valid")
     .required("required"),
   address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
+  //address2: yup.string().required("required"),
 });
 
 const Form: React.FC = () => {

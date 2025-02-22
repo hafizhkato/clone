@@ -95,17 +95,17 @@ const Contacts: React.FC = () => {
         title="CONTACTS"
         subtitle="List of Contacts for Future Reference"
       />
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleDelete}
-        disabled={selectedRows.length === 0}
-        sx={{ mb: 2 }}
-      >
-        Delete Selected
-      </Button>
+      <Box display="flex" justifyContent="flex-end" mb={1} mr={2}>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleDelete}
+          disabled={selectedRows.length === 0}
+        >
+        Delete 
+      </Button></Box>
       <Box
-        m="40px 0 0 0"
+        m="10px 0 0 0"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
