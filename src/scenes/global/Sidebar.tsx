@@ -17,6 +17,7 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import React from "react";
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 interface ItemProps {
   title: string;
@@ -49,6 +50,7 @@ const Sidebar: React.FC = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const { user} = useAuthenticator();
 
   return (
     <Box
@@ -117,7 +119,7 @@ const Sidebar: React.FC = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  apiz kato
+                  {user?.signInDetails?.loginId}
                 </Typography>
                 <Typography variant="h6" color={colors.greenAccent[500]}>
                   startup founder

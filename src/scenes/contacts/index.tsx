@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 //import { mockDataContacts } from "../../data/mockData";
@@ -11,11 +11,14 @@ import { useState, useEffect } from "react";
 
 const client = generateClient<Schema>();
 
-
+// Define the Contacts component
 const Contacts: React.FC = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [users, setUsers] = useState<Array<Schema["User"]["type"]>>([]);
+  const [selectedRows, setSelectedRows] = useState<Array<string | number>>([]);
+
+  // Fetch records from the database
   useEffect(() => {
     const subscription = client.models.User.observeQuery().subscribe({
       next: (data) => setUsers([...data.items]),
@@ -24,11 +27,30 @@ const Contacts: React.FC = () => {
     return () => subscription.unsubscribe(); // Cleanup
   }, []);
 
+  //function deleteUser(id: string) 
+  const handleDelete = async () => {
+    // ask for confirmation before deleting
+    const confirmDelete = window.confirm("Are you sure you want to delete the selected items?");
+    if (!confirmDelete) {
+      return;
+    }
+
+    // delete the selected rows
+    try {
+      await Promise.all(
+        selectedRows.map((id) => client.models.User.delete({ id: id.toString() }))
+      );
+      setUsers(users.filter((user) => !selectedRows.includes(user.id)));
+      setSelectedRows([]);
+    } catch (error) {
+      console.error("Failed to delete selected rows:", error);
+    }
+  };
+
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "registrarId", headerName: "Registrar ID" },
+    { field: "id", headerName: "Registrar ID" },
     {
-      field: "name",
+      field: "firstName",
       headerName: "Name",
       flex: 1,
       cellClassName: "name-column--cell",
@@ -41,7 +63,7 @@ const Contacts: React.FC = () => {
       align: "left",
     },
     {
-      field: "phone",
+      field: "contact",
       headerName: "Phone Number",
       flex: 1,
     },
@@ -73,6 +95,15 @@ const Contacts: React.FC = () => {
         title="CONTACTS"
         subtitle="List of Contacts for Future Reference"
       />
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleDelete}
+        disabled={selectedRows.length === 0}
+        sx={{ mb: 2 }}
+      >
+        Delete Selected
+      </Button>
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -109,6 +140,11 @@ const Contacts: React.FC = () => {
           rows={users}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
+          checkboxSelection
+          onRowSelectionModelChange={(newSelection) => {
+            setSelectedRows([...newSelection]);
+            //newSelection.forEach((id) => deleteUser(id as string));
+          }}
         />
       </Box>
     </Box>
@@ -116,4 +152,3 @@ const Contacts: React.FC = () => {
 };
 
 export default Contacts;
-
