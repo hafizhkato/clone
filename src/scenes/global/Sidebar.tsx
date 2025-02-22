@@ -20,6 +20,7 @@ import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import React from "react";
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
+
 interface ItemProps {
   title: string;
   to: string;
@@ -119,8 +120,10 @@ const Sidebar: React.FC = () => {
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
-                  onClick={() => setIsCollapsed(!isCollapsed)}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
+                  onClick={() => setIsCollapsed(!isCollapsed)
+
+                  }
+                  style={{ cursor: "pointer", borderRadius: "25%" }}
                 >
                   {user?.signInDetails?.loginId}
                 </Typography>
