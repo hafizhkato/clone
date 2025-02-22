@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -19,6 +19,8 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import AddAPhotoOutlinedIcon from '@mui/icons-material/AddAPhotoOutlined';
 import React from "react";
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { uploadData, remove, list, getUrl } from 'aws-amplify/storage';
+
 
 
 interface ItemProps {
@@ -52,7 +54,75 @@ const Sidebar: React.FC = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [file, setFile] = useState<File | null>(null);
   const { user} = useAuthenticator();
+  const [url, setUrl] = useState<string>("");
+
+  
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFile(event.target.files?.[0] || null);//safely to get the first file ie:files[0]
+    };
+    useEffect(() => {
+      const fetchInitialProfilePicture = async () => {
+        try {
+  
+          const { items } = await list({ path: ({identityId}) => `profile-pictures/${identityId}/` });
+  
+          if (items.length > 0) {
+            const profilePictureKey = items[0].path;
+            const { url } = await getUrl({ path: profilePictureKey });
+            setUrl(url.toString()); // Set initial profile picture
+          }
+        } catch (error) {
+          console.error("Failed to fetch profile picture:", error);
+        }
+      };
+  
+      fetchInitialProfilePicture();
+    }, [user]); // Runs once when user changes
+
+    useEffect(() => {
+      if (file) {
+        const uploadFile = async () => {
+          try {
+
+            // List all objects in the user's profile picture folder
+            const { items } = await list({ path: ({identityId}) => `profile-pictures/${identityId}/` });
+    
+            // Ensure there are items before attempting to delete
+            if (items.length > 0) {
+              await Promise.all(
+                items.map(async (item) => {
+                  await remove({ path: item.path }); // Correctly pass 'path'
+                })
+              );
+            }
+    
+            // Upload new file after deletion
+            await uploadData({
+              path: ({identityId}) => `profile-pictures/${identityId}/${file.name}`,
+              data: file,
+              
+            });
+
+            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+            await delay(1000);
+
+            const { url } = await getUrl({ path: ({identityId}) => `profile-pictures/${identityId}/${file.name}`});
+            setUrl(url.toString());
+    
+            console.log('File uploaded successfully');
+            setFile(null); // Reset the file state
+          } catch (error) {
+            console.error('Failed to upload file:', error);
+          }
+        };
+    
+        uploadFile();
+      }
+    }, [file, user]);
+
 
   return (
     <Box
@@ -106,16 +176,23 @@ const Sidebar: React.FC = () => {
           {!isCollapsed && (
             <Box mb="25px">
               <Box display="flex" justifyContent="center" alignItems="center">
+                <input
+                  type="file"
+                  id="fileInput"
+                  style={{ display: "none" }}
+                  onChange={handleChange}
+                />
                 <img
+                  onClick={() => document.getElementById('fileInput')?.click()}
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/logo.png`}
+                  src={url}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
               <Box textAlign="center">
-                <Typography
+                {/* <Typography
                   variant="h5"
                   color={colors.grey[100]}
                   fontWeight="bold"
@@ -126,10 +203,10 @@ const Sidebar: React.FC = () => {
                   style={{ cursor: "pointer", borderRadius: "25%" }}
                 >
                   {user?.signInDetails?.loginId}
-                </Typography>
-                <Box paddingLeft={isCollapsed ? undefined : "10%"} mr={5}>
+                </Typography> */}
+                <Box paddingLeft={isCollapsed ? undefined : "10%"}>
                 <Item
-                  title="Edit Profile"
+                  title={user?.signInDetails?.loginId || ""}
                   to="/userProfile"
                   icon={<AddAPhotoOutlinedIcon />}
                   selected={selected}

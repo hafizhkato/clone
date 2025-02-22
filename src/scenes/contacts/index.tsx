@@ -8,6 +8,9 @@ import React from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../amplify/data/resource";
 import { useState, useEffect } from "react";
+import '@aws-amplify/ui-react/styles.css';
+
+
 
 const client = generateClient<Schema>();
 
@@ -95,6 +98,7 @@ const Contacts: React.FC = () => {
         title="CONTACTS"
         subtitle="List of Contacts for Future Reference"
       />
+     
       <Box display="flex" justifyContent="flex-end" mb={1} mr={2}>
         <Button
           variant="contained"
